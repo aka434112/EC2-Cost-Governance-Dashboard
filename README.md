@@ -1,6 +1,6 @@
-# co
+# EC2 Cost Governance Dashboard (initial drop)
 
-> A Vue.js project
+> The EC2 Cost Governance Dashboard helps users configure budget limits along with actions for an IAM user account
 
 ## Build Setup
 
