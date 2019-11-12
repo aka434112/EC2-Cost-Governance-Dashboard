@@ -155,7 +155,7 @@ export default {
       that.costUsageLimits = [];
       that.costPattern = []
       let requestBody = JSON.stringify({"accessId": accessId, "secretKey": that.secretKeys[accessId]})
-      fetch("http://localhost:3000/api/v1/ec2Instances/cost/getCostCurrentMonth", {
+      fetch("http://localhost:3000/api/v1/ec2Instances/cost/getCostCurrentMonth", {    //All the Ajax calls (the fetch API in this case) need to moved to a separate file/module. Refactoring needed here. Probably needs to be re-written making use of async/await to make this block look clean
         method: "POST",
         body: requestBody,
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
