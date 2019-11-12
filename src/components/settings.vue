@@ -125,7 +125,7 @@ export default {
         },
         saveCredentials: function () {
           let that = this
-          fetch('http://localhost:3000/credentials/AWS/postAccount', {
+          fetch('http://localhost:3000/credentials/AWS/postAccount', { //All the Ajax calls (the fetch API in this case) need to moved to a separate file/module. Refactoring needed here. Probably needs to be re-written making use of async/await to make this block look clean
             method: "POST",
             headers: {'Content-Type': 'application/json' },
             body: JSON.stringify({"credentials": {"accessId": that.accessId, "secretKey": that.secretKey, "aliasName": that.aliasName, "email": that.email, "budgets": that.credentialsObj}})
