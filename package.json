@@ -1,5 +1,5 @@
 {
-  "name": "EC2 Cost Governance Dashboard",
+  "name": "cgd",
   "version": "1.0.0",
   "description": "The UI constituting the 'EC2 Cost Governance' application (beta)",
   "author": "S Ajith Kumar",
