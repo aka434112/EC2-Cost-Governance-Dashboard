@@ -19,3 +19,8 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(130).png)
+![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(131).png)
+![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(132).png)
+![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(133).png)
+![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(134).png)
