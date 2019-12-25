@@ -112,74 +112,74 @@ export default {
     }, 
     methods: {
         editSettingsForExistingUser: function () {
-          let that = this
-          that.editEnabled = true
-          if(that.budgetList.length)
-          that.enableBillingCap = true
+          let vm = this
+          vm.editEnabled = true
+          if(vm.budgetList.length)
+          vm.enableBillingCap = true
         },
         resetBudget: function () {
-          let that = this
-          that.budgetList = []
-          that.budgetObj = {}
-          that.inputsDidNotPassValidation = false
+          let vm = this
+          vm.budgetList = []
+          vm.budgetObj = {}
+          vm.inputsDidNotPassValidation = false
         },
         saveCredentials: function () {
-          let that = this
+          let vm = this
           fetch('http://localhost:3000/credentials/AWS/postAccount', { //All the Ajax calls (the fetch API in this case) need to moved to a separate file/module. Refactoring needed here. Probably needs to be re-written making use of async/await to make this block look clean
             method: "POST",
             headers: {'Content-Type': 'application/json' },
-            body: JSON.stringify({"credentials": {"accessId": that.accessId, "secretKey": that.secretKey, "aliasName": that.aliasName, "email": that.email, "budgets": that.credentialsObj}})
+            body: JSON.stringify({"credentials": {"accessId": vm.accessId, "secretKey": vm.secretKey, "aliasName": vm.aliasName, "email": vm.email, "budgets": vm.credentialsObj}})
           }).then(postResponse => {
             if (postResponse.status === 201) {
-              that.clearCredentials()
+              vm.clearCredentials()
             } 
           })
         },
         clearCredentials: function () {
-          let that = this
-          that.aliasName = ""
-          that.secretKey = ""
-          that.accessId = ""
-          that.email = ""
-          that.selectedAccount = ""
-          that.enableBillingCap = false
-          that.editEnabled = true
-          that.addNewUser = true
+          let vm = this
+          vm.aliasName = ""
+          vm.secretKey = ""
+          vm.accessId = ""
+          vm.email = ""
+          vm.selectedAccount = ""
+          vm.enableBillingCap = false
+          vm.editEnabled = true
+          vm.addNewUser = true
         },
         setBudgets: function () {
-          let that = this
-          if(!that.budgetList.length) {
-            that.enableBillingCap = false
+          let vm = this
+          if(!vm.budgetList.length) {
+            vm.enableBillingCap = false
             return
           }
-          that.budgetList.sort((a,b) => {
+          vm.budgetList.sort((a,b) => {
             return parseInt(b)-parseInt(a);
           }) 
-          that.credentialsObj = that.budgetObj
-          that.credentialsObj["budgetsList"] = that.budgetList
-          that.addBillingLimits = false
+          vm.credentialsObj = vm.budgetObj
+          vm.credentialsObj["budgetsList"] = vm.budgetList
+          vm.addBillingLimits = false
         },
         addBudget: function () {
-          let that = this
-          let billingLimit = that.billingLimit
-          if(parseFloat(billingLimit) > 0 && that.action !== ""){
-              that.inputsDidNotPassValidation = false
-              if(!that.budgetList.includes(billingLimit))
-              that.budgetList.push(billingLimit)
-              that.budgetObj[billingLimit] = that.action
-              that.billingLimit = 0;
-              that.action = ""; 
+          let vm = this
+          let billingLimit = vm.billingLimit
+          if(parseFloat(billingLimit) > 0 && vm.action !== ""){
+              vm.inputsDidNotPassValidation = false
+              if(!vm.budgetList.includes(billingLimit))
+              vm.budgetList.push(billingLimit)
+              vm.budgetObj[billingLimit] = vm.action
+              vm.billingLimit = 0;
+              vm.action = ""; 
           } else {
-            that.inputsDidNotPassValidation = true
+            vm.inputsDidNotPassValidation = true
           }             
         },
         editBudget: function () {
-          let that = this
-          that.addBillingLimits = true
+          let vm = this
+          vm.addBillingLimits = true
         },
         addUser: function () {
-          let that = this
-          that.clearCredentials()
+          let vm = this
+          vm.clearCredentials()
         },
         deleteUser: function () {
 
@@ -187,40 +187,40 @@ export default {
     },
     watch: {
       enableBillingCap: function(billingCap) {
-        let that = this
+        let vm = this
         if(billingCap){
-          if(!that.budgetList.length)
-          that.addBillingLimits = true
+          if(!vm.budgetList.length)
+          vm.addBillingLimits = true
         } else {
-          that.budgetObj = {}
-          that.budgetList = []
-          that.credentialsObj = {}
+          vm.budgetObj = {}
+          vm.budgetList = []
+          vm.credentialsObj = {}
         }
       },
       selectedAccount: function (accessId) {
         if(accessId !== "") {
-          let that = this
-          that.editEnabled = false
-          that.addNewUser = false
-          that.accessId = accessId.split("-")[0]
-          that.aliasName = accessId.split('-')[1]
-          that.secretKey = that.secretKeys[that.accessId]
-          that.email = that.emailIds[that.accessId]
-          that.budgetObj = that.budgetLimitsAccounts[that.accessId]
-          if(that.budgetObj && Object.keys(that.budgetObj).length) {
-            that.budgetList = that.budgetObj.budgetsList
+          let vm = this
+          vm.editEnabled = false
+          vm.addNewUser = false
+          vm.accessId = accessId.split("-")[0]
+          vm.aliasName = accessId.split('-')[1]
+          vm.secretKey = vm.secretKeys[vm.accessId]
+          vm.email = vm.emailIds[vm.accessId]
+          vm.budgetObj = vm.budgetLimitsAccounts[vm.accessId]
+          if(vm.budgetObj && Object.keys(vm.budgetObj).length) {
+            vm.budgetList = vm.budgetObj.budgetsList
           } else {
-            that.budgetList = []
+            vm.budgetList = []
           }
         }
       }
     },
     mixins: [accountsMixin],
     created () {
-      let that = this
-      that.actionsObj["terminate"] = that.actions[0]
-      that.actionsObj["stop"] = that.actions[1]
-      that.actions["email"] = that.action[2]
+      let vm = this
+      vm.actionsObj["terminate"] = vm.actions[0]
+      vm.actionsObj["stop"] = vm.actions[1]
+      vm.actions["email"] = vm.action[2]
     }
 }
 </script>

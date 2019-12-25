@@ -1,20 +1,20 @@
 <template>
   <v-container>
     <v-layout row wrap>
-        <v-flex xs11 sm5 offset-sm1>
+        <v-flex xs11 sm7>
           <v-autocomplete v-model="selectedAccount" :items="awsAccessIds" hide-no-data hide-selected label="Lookup an IAM user account" placeholder="Start typing to Search" prepend-icon="mdi-database-search" return-object></v-autocomplete>
         </v-flex>
-        <v-flex xs12 sm5 offset-sm1>
+        <v-flex xs12 sm6>
             <v-card v-show="costUsageLimits.length > 1" class="top-spacing"> 
-              <GChart type="ColumnChart" :data="costUsageLimits" :options="costForCurrentMonthOptions"/>
+              <GChart type="BarChart" :data="costUsageLimits" :options="costForCurrentMonthOptions"/>
             </v-card>
         </v-flex>
-        <v-flex xs12 sm4 offset-sm1>
+        <v-flex xs12 sm5 offset-sm1>
             <v-card v-show="costPattern.length > 1" class="top-spacing"> 
               <GChart type="LineChart" :data="costPattern" :options="costPatternChartOptions"/>
             </v-card>
         </v-flex>
-        <v-flex xs12 sm10 offset-sm1 style="margin-top:1%;">
+        <v-flex xs12 style="margin-top:1%;">
           <v-data-table
           :headers="awsHeaders"
           :loading="tableLoading"
@@ -22,12 +22,14 @@
           no-data-text="Please select an IAM user account"
           class="elevation-1 top-spacing"
           >
-              <template v-slot:items="props">
+              <template v-slot:item="props">
+                <tr>
                   <td class="text-xs-left">{{ props.item.InstanceId }}</td>
                   <td class="text-xs-left">{{ props.item.region }}</td>
                   <td class="text-xs-left">{{ props.item.InstanceType }}</td>
                   <td class="text-xs-left">{{ props.item.status.status }}</td>
                   <td class="text-xs-centre"><v-btn color="green" class="action" v-if="props.item.status.status === 'stopped'">Start Instance</v-btn><v-btn class="action" v-if="props.item.status.status === 'running'" color="red">Stop Instance</v-btn></td>
+                </tr>
               </template>
           </v-data-table>           
         </v-flex>
@@ -37,6 +39,7 @@
 
 <script>
 import accountsMixin from '../mixins/accounts'
+import httpSvc from '../rest/httpClient'
 
 export default {
   name: 'HelloWorld',
@@ -52,31 +55,26 @@ export default {
                     text: 'Instance ID',
                     align: 'left',
                     sortable: false,
-                    value: 'name'
                 },
                 {
                     text: 'Region',
                     align: 'left',
                     sortable: false,
-                    value: 'name'
                 },
                 {
                     text: 'Instance Type',
                     align: 'left',
                     sortable: false,
-                    value: 'name'
                 },
                 {
                     text: 'Instance State',
                     align: 'left',
                     sortable: false,
-                    value: 'name'
                 },
                 {
                     text: 'Action',
                     align: 'centre',
-                    sortable: false,
-                    value: 'name'                 
+                    sortable: false,                
                 }
       ],
       ec2Instances: [],
@@ -89,6 +87,7 @@ export default {
         },
         height: 250,
         vAxis: {
+          minValue: 0,
           textStyle: { 
             fontName: 'Montserrat', 
           },
@@ -108,7 +107,7 @@ export default {
         title: 'Costs Incurred this month against an Action (in USD)',
         titleTextStyle: {
                       fontSize: 16,
-                      fontName: 'Montserrat',
+                      fontName: 'Montserrat'
         },
         height: 250,
         series: {
@@ -122,21 +121,24 @@ export default {
             type: "line"
           }
         },
-
         vAxis: {
-          textStyle: { 
-            fontName: 'Montserrat', 
-          },
+          textPosition: 'none',
           viewWindow: {
             min: 0
           }
         },
         hAxis: {
+          title: 'Cost Incurred (in USD)',
+          titleTextStyle: {
+                        fontName: 'Montserrat',
+                        italic: false,
+                        bold: true
+          },
           textStyle: { 
             fontName: 'Montserrat', 
           },  
         },      
-        chartArea:{width:'90%'},
+        chartArea:{width:'95%'},
         legend: {textStyle: {fontName: 'Montserrat', fontSize: 10}, position: 'top', alignment: 'start' },        
       }
     }
@@ -144,63 +146,53 @@ export default {
   methods: {
     displayOverlay: function () {
       this.$store.dispatch('toggleOverlay')
+    },
+    fetchAccountRelatedData: function (accessId) {
+      let vm = this
+      let budgets = vm.budgetLimitsAccounts[accessId]
+      let requestBody = JSON.stringify({"accessId": accessId, "secretKey": vm.secretKeys[accessId]})
+      httpSvc.getCurrentMonthSpend(requestBody).then(currentCostData => {
+          const currentCost = currentCostData.data
+          let currentMonth = vm.monthNames[new Date().getMonth()]
+          let costsBudgetLimitsAccounts = [["Month", "Costs Incurred (in USD)"], ["", null]];
+          costsBudgetLimitsAccounts.push([currentMonth, parseFloat(currentCost)])
+          budgets["budgetsList"].forEach(budget => {
+            costsBudgetLimitsAccounts[0].push("'" + budgets[budget] + "' action limit (in USD)")
+            costsBudgetLimitsAccounts[1].push(parseFloat(budget))
+            costsBudgetLimitsAccounts[2].push(parseFloat(budget))
+          })
+          costsBudgetLimitsAccounts.push(costsBudgetLimitsAccounts[1])
+          vm.costUsageLimits = costsBudgetLimitsAccounts
+      })
+      httpSvc.getSpendPattern(requestBody).then(usagePatternData => {
+        const usagePattern = usagePatternData.data
+        let incurredCosts = [["Month", "Cost Incurred"]]
+        for(let month in usagePattern) {
+          incurredCosts.push([month, parseFloat(usagePattern[month])])
+        }
+        vm.costPattern = incurredCosts
+      })
+      httpSvc.getListOfEc2Instances(requestBody).then(instanceListData => {
+        const instanceList = instanceListData.data
+        vm.ec2Instances = instanceList
+        vm.tableLoading = false
+      })
     }
   },
   watch: {
     selectedAccount: function (accessId) {
       accessId = accessId.split("-")[0]
-      let that = this
-      that.tableLoading = true
-      let budgets = that.budgetLimitsAccounts[accessId]
-      that.costUsageLimits = [];
-      that.costPattern = []
-      let requestBody = JSON.stringify({"accessId": accessId, "secretKey": that.secretKeys[accessId]})
-      fetch("http://localhost:3000/api/v1/ec2Instances/cost/getCostCurrentMonth", {    //All the Ajax calls (the fetch API in this case) need to moved to a separate file/module. Refactoring needed here. Probably needs to be re-written making use of async/await to make this block look clean
-        method: "POST",
-        body: requestBody,
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      }).then(response => response.json()).then(currentCost => {
-          let currentMonth = that.monthNames[new Date().getMonth()]
-          let costsBudgetLimitsAccounts = [["Month", "Costs Incurred (in USD)"], ["", null]];
-          costsBudgetLimitsAccounts.push([currentMonth, parseInt(currentCost)])
-          budgets["budgetsList"].forEach(budget => {
-            costsBudgetLimitsAccounts[0].push("'" + budgets[budget] + "' action limit (in USD)")
-            costsBudgetLimitsAccounts[1].push(parseInt(budget))
-            costsBudgetLimitsAccounts[2].push(parseInt(budget))
-          })
-          costsBudgetLimitsAccounts.push(costsBudgetLimitsAccounts[1])
-          that.costUsageLimits = costsBudgetLimitsAccounts
-          console.log(that.costUsageLimits)
-      })
-      fetch("http://localhost:3000/api/v1/ec2Instances/cost/getCostPattern", {
-        method: "POST",
-        body: requestBody,
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      }).then(response => response.json()).then(usagePattern => {
-        let incurredCosts = [["Month", "Cost Incurred"]]
-        for(let month in usagePattern) {
-          incurredCosts.push([month, parseInt(usagePattern[month])])
-        }
-        that.costPattern = incurredCosts
-      })
-      fetch('http://localhost:3000/api/v1/ec2Instances', {
-        method: "POST",
-        body: requestBody,
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      }).then(response => {
-        if (response.status === 200) {
-          return response.json()
-        }
-      }).then(instanceList => {
-        that.ec2Instances = instanceList
-        that.tableLoading = false
-      })
+      let vm = this
+      vm.tableLoading = true
+      vm.costUsageLimits = [];
+      vm.costPattern = []
+      vm.fetchAccountRelatedData(accessId)
     }
   },
   mixins: [accountsMixin],
   created () {
-    let that = this
-    that.getAwsAccounts()
+    let vm = this
+    vm.getAwsAccounts()
   }
 }
 </script>
