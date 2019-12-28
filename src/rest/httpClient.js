@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const httpSvc = axios.create({
     //baseURL: process.env.VUE_APP_BASE_URL,
-    baseURL: 'http://localhost:3000/api/v1/ec2Instances/',
+    baseURL: 'http://localhost:3000/api/v1/aws/ec2Instances/',
     crossDomain: true,
     headers: {
         "Content-Type": "application/json",

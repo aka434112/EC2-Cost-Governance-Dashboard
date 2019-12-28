@@ -80,7 +80,7 @@ export default {
       ec2Instances: [],
       monthNames : ["January", "February", "March", "April", "May", "June","July", "August", "September", "October", "November", "December"],
       costPatternChartOptions: {
-        title: 'Costs Incurred over the past few months (in USD)',
+        title: 'Cost Incurred over the past few months (in USD)',
         titleTextStyle: {
                       fontSize: 16,
                       fontName: 'Montserrat',
@@ -104,7 +104,7 @@ export default {
         legend: {textStyle: {fontName: 'Montserrat', fontSize: 14}, position: 'top', alignment: 'start' },
       },
       costForCurrentMonthOptions: {
-        title: 'Costs Incurred this month against an Action (in USD)',
+        title: 'Cost Incurred this month against an Action (in USD)',
         titleTextStyle: {
                       fontSize: 16,
                       fontName: 'Montserrat'

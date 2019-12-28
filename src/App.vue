@@ -3,7 +3,7 @@
     <div>
       <v-app-bar color="blue" dark>
           <v-app-bar-nav-icon @click="showNavMenu=true"></v-app-bar-nav-icon>
-          <v-toolbar-title>Cost Governance Dashboard</v-toolbar-title>
+          <v-toolbar-title>EC2 Cost Governance Dashboard</v-toolbar-title>
       </v-app-bar>
       <v-overlay :value="displayOverlay"></v-overlay>
       <v-navigation-drawer
