@@ -28,6 +28,11 @@
                   <td class="text-xs-left">{{ props.item.region }}</td>
                   <td class="text-xs-left">{{ props.item.InstanceType }}</td>
                   <td class="text-xs-left">{{ props.item.status.status }}</td>
+                  <td class="text-xs-left" v-if="props.item.Tags.length">
+                    <br/>
+                    <div v-for="Tag in props.item.Tags"><v-chip pill color="primary">{{Tag.Key}} : {{Tag.Value}}</v-chip></div><br/>
+                  </td>
+                  <td class="text-xs-left" v-else>Not defined</td>
                   <td class="text-xs-centre"><v-btn color="green" class="action" v-if="props.item.status.status === 'stopped'">Start Instance</v-btn><v-btn class="action" v-if="props.item.status.status === 'running'" color="red">Stop Instance</v-btn></td>
                 </tr>
               </template>
@@ -72,8 +77,13 @@ export default {
                     sortable: false,
                 },
                 {
+                    text: 'Tags',
+                    align: 'left',
+                    sortable: false,
+                },
+                {
                     text: 'Action',
-                    align: 'centre',
+                    align: 'left',
                     sortable: false,                
                 }
       ],
@@ -123,9 +133,6 @@ export default {
         },
         vAxis: {
           textPosition: 'none',
-          viewWindow: {
-            min: 0
-          }
         },
         hAxis: {
           title: 'Cost Incurred (in USD)',
@@ -137,6 +144,9 @@ export default {
           textStyle: { 
             fontName: 'Montserrat', 
           },  
+          viewWindow: {
+            min: 0
+          }
         },      
         chartArea:{width:'95%'},
         legend: {textStyle: {fontName: 'Montserrat', fontSize: 10}, position: 'top', alignment: 'start' },        
@@ -154,15 +164,21 @@ export default {
       httpSvc.getCurrentMonthSpend(requestBody).then(currentCostData => {
           const currentCost = currentCostData.data
           let currentMonth = vm.monthNames[new Date().getMonth()]
-          let costsBudgetLimitsAccounts = [["Month", "Costs Incurred (in USD)"], ["", null]];
-          costsBudgetLimitsAccounts.push([currentMonth, parseFloat(currentCost)])
-          budgets["budgetsList"].forEach(budget => {
-            costsBudgetLimitsAccounts[0].push("'" + budgets[budget] + "' action limit (in USD)")
-            costsBudgetLimitsAccounts[1].push(parseFloat(budget))
-            costsBudgetLimitsAccounts[2].push(parseFloat(budget))
-          })
-          costsBudgetLimitsAccounts.push(costsBudgetLimitsAccounts[1])
-          vm.costUsageLimits = costsBudgetLimitsAccounts
+          let costsBudgetLimitsAccounts;
+          if(budgets["budgetsList"]) {
+            costsBudgetLimitsAccounts = [["Month", "Costs Incurred (in USD)"], ["", null]];
+            costsBudgetLimitsAccounts.push([currentMonth, parseFloat(currentCost)]);
+            budgets["budgetsList"].forEach(budget => {
+              costsBudgetLimitsAccounts[0].push("'" + budgets[budget] + "' action limit (in USD)");
+              costsBudgetLimitsAccounts[1].push(parseFloat(budget));
+              costsBudgetLimitsAccounts[2].push(parseFloat(budget));
+            })
+            costsBudgetLimitsAccounts.push(costsBudgetLimitsAccounts[1]);
+          } else {
+              costsBudgetLimitsAccounts = [["Month", "Costs Incurred (in USD)"]];
+              costsBudgetLimitsAccounts.push([currentMonth, parseFloat(currentCost)]);
+          }
+          vm.costUsageLimits = costsBudgetLimitsAccounts;
       })
       httpSvc.getSpendPattern(requestBody).then(usagePatternData => {
         const usagePattern = usagePatternData.data
