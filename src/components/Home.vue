@@ -44,7 +44,7 @@
 
 <script>
 import accountsMixin from '../mixins/accounts'
-import httpSvc from '../rest/httpClient'
+import awsClient from '../rest/awsClient'
 
 export default {
   name: 'HelloWorld',
@@ -161,7 +161,7 @@ export default {
       let vm = this
       let budgets = vm.budgetLimitsAccounts[accessId]
       let requestBody = JSON.stringify({"accessId": accessId, "secretKey": vm.secretKeys[accessId]})
-      httpSvc.getCurrentMonthSpend(requestBody).then(currentCostData => {
+      awsClient.getCurrentMonthSpend(requestBody).then(currentCostData => {
           const currentCost = currentCostData.data
           let currentMonth = vm.monthNames[new Date().getMonth()]
           let costsBudgetLimitsAccounts;
@@ -180,7 +180,7 @@ export default {
           }
           vm.costUsageLimits = costsBudgetLimitsAccounts;
       })
-      httpSvc.getSpendPattern(requestBody).then(usagePatternData => {
+      awsClient.getSpendPattern(requestBody).then(usagePatternData => {
         const usagePattern = usagePatternData.data
         let incurredCosts = [["Month", "Cost Incurred"]]
         for(let month in usagePattern) {
@@ -188,7 +188,7 @@ export default {
         }
         vm.costPattern = incurredCosts
       })
-      httpSvc.getListOfEc2Instances(requestBody).then(instanceListData => {
+      awsClient.getListOfEc2Instances(requestBody).then(instanceListData => {
         const instanceList = instanceListData.data
         vm.ec2Instances = instanceList
         vm.tableLoading = false
@@ -207,8 +207,8 @@ export default {
   },
   mixins: [accountsMixin],
   created () {
-    let vm = this
-    vm.getAwsAccounts()
+    let vm = this;
+    vm.fetchIamUsers();
   }
 }
 </script>

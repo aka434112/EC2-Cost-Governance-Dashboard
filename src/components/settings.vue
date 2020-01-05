@@ -21,8 +21,8 @@
                           <v-chip v-for="(action, budget) in budgetObj" v-if="budget !== 'budgetsList'" class="ma-2" color="red" label text-color="white"><v-icon left>attach_money</v-icon>{{budget}}-{{action}}</v-chip>
                         </v-flex>
                         <v-flex xs12>
-                          <v-alert style="text-align: justify" class="alert" v-show="action === actionsObj['terminate']" type="warning">When you terminate an EC2 instance, the instance will be shutdown and the virtual machine that was provisioned for you will be permanently taken away and you will no longer be charged for instance usage. Any data that was stored locally on the instance will be lost. Any attached EBS volumes will be detached and deleted</v-alert>
-                          <v-alert style="text-align: justify" class="alert" v-show="action === actionsObj['stop']" type="warning">When you stop an EC2 instance, the instance will be shutdown and the virtual machine that was provisioned for you will be permanently taken away and you will no longer be charged for instance usage. The key difference between stopping and terminating an instance is that the attached bootable EBS volume will not be deleted. The data on your EBS volume will remain after stopping while all information on the local (ephemeral) hard drive will be lost as usual. The volume will continue to persist in its availability zone.</v-alert>
+                          <v-alert style="text-align: justify" class="alert" v-show="action === actionsObj[terminateInstancesMsgKey]" type="warning">When you terminate an EC2 instance, the instance will be shutdown and the virtual machine that was provisioned for you will be permanently taken away and you will no longer be charged for instance usage. Any data that was stored locally on the instance will be lost. Any attached EBS volumes will be detached and deleted</v-alert>
+                          <v-alert style="text-align: justify" class="alert" v-show="action === actionsObj[stopInstancesMsgKey]" type="warning">When you stop an EC2 instance, the instance will be shutdown and the virtual machine that was provisioned for you will be permanently taken away and you will no longer be charged for instance usage. The key difference between stopping and terminating an instance is that the attached bootable EBS volume will not be deleted. The data on your EBS volume will remain after stopping while all information on the local (ephemeral) hard drive will be lost as usual. The volume will continue to persist in its availability zone.</v-alert>
                         </v-flex>
                       </v-layout>
                     </v-container>
@@ -79,9 +79,11 @@
 </template>
 
 <script>
-import alertMessages from '../utils/alerts'
-import formRules from '../utils/rules'
-import accountsMixin from '../mixins/accounts'
+import alertMessages from '../utils/alerts';
+import formRules from '../utils/rules';
+import accountsMixin from '../mixins/accounts';
+import accountsClient from '../rest/accountsClient';
+import Account from '../models/accountModel';
 
 export default {
     name: 'Settings',
@@ -108,6 +110,9 @@ export default {
             actions: alertMessages,
             actionsObj: {},
             formRules,
+            terminateInstancesMsgKey: 'terminateInstances',
+            stopInstancesMsgKey: 'stopInstances',
+            emailMsgKey: 'emal'
         }
     }, 
     methods: {
@@ -123,13 +128,10 @@ export default {
           vm.budgetObj = {}
           vm.inputsDidNotPassValidation = false
         },
-        saveCredentials: function () {
+        saveCredentials: async function () {
           let vm = this
-          fetch('http://localhost:3000/credentials/AWS/postAccount', { //All the Ajax calls (the fetch API in this case) need to moved to a separate file/module. Refactoring needed here. Probably needs to be re-written making use of async/await to make this block look clean
-            method: "POST",
-            headers: {'Content-Type': 'application/json' },
-            body: JSON.stringify({"credentials": {"accessId": vm.accessId, "secretKey": vm.secretKey, "aliasName": vm.aliasName, "email": vm.email, "budgets": vm.credentialsObj}})
-          }).then(postResponse => {
+          let credentials = new Account(vm.accessId, vm.secretKey, vm.aliasName, vm.email, vm.credentialsObj);
+          accountsClient.AddIamUser(credentials).then(postResponse => {
             if (postResponse.status === 201) {
               vm.clearCredentials()
             } 
@@ -199,28 +201,35 @@ export default {
       },
       selectedAccount: function (accessId) {
         if(accessId !== "") {
-          let vm = this
-          vm.editEnabled = false
-          vm.addNewUser = false
-          vm.accessId = accessId.split("-")[0]
-          vm.aliasName = accessId.split('-')[1]
-          vm.secretKey = vm.secretKeys[vm.accessId]
-          vm.email = vm.emailIds[vm.accessId]
-          vm.budgetObj = vm.budgetLimitsAccounts[vm.accessId]
+          let vm = this;
+          vm.editEnabled = false;
+          vm.addNewUser = false;
+          vm.accessId = accessId.split("-")[0];
+          vm.aliasName = accessId.split('-')[1];
+          vm.secretKey = vm.secretKeys[vm.accessId];
+          vm.email = vm.emailIds[vm.accessId];
+          vm.budgetObj = vm.budgetLimitsAccounts[vm.accessId];
           if(vm.budgetObj && Object.keys(vm.budgetObj).length) {
-            vm.budgetList = vm.budgetObj.budgetsList
+            vm.budgetList = vm.budgetObj.budgetsList;
           } else {
-            vm.budgetList = []
+            vm.budgetList = [];
           }
+        }
+      },
+      action: function(selectedAction) {
+        if(selectedAction === actionsObj[terminateInstancesMsgKey]) {
+
+        } else if(selectedAction === actionsObj[stopInstancesMsgKey]) {
+
         }
       }
     },
     mixins: [accountsMixin],
     created () {
       let vm = this
-      vm.actionsObj["terminate"] = vm.actions[0]
-      vm.actionsObj["stop"] = vm.actions[1]
-      vm.actions["email"] = vm.action[2]
+      vm.actionsObj[terminateInstancesMsgKey] = vm.actions[0];
+      vm.actionsObj[stopInstancesMsgKey] = vm.actions[1];
+      vm.actions[emailMsgKey] = vm.action[2];
     }
 }
 </script>
