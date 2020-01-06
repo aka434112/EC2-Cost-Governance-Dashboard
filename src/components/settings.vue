@@ -13,6 +13,7 @@
                         <v-flex xs12 sm9 class="text-xs-left">
                           <v-text-field label="Budget Limit (in USD)*" type="number" v-model="billingLimit" required></v-text-field>
                           <v-select :items="actions" label="Select an action*" required v-model="action"></v-select>
+                          <v-select :items="instancesApplicable" v-show="action === actionsObj[terminateInstancesMsgKey] || action === actionsObj[stopInstancesMsgKey]" label="Specify the list of instances that the action is applicable to*" required v-model="instancesToActUpon"></v-select>
                           <div v-show="inputsDidNotPassValidation" class="red--text"><v-icon color="red" style="vertical-align:middle">close</v-icon>Please specify a valid budget/action</div>
                           <v-btn color="blue darken-1" text @click="addBudget()">Add Limit</v-btn>
                           <v-btn color="blue darken-1" text @click="resetBudget()">Reset Limits</v-btn>
@@ -37,9 +38,9 @@
               <v-card-text>
                 <v-form v-model="formValid" ref="form">
                   <v-flex xs12>
-                    <v-text-field v-model="accessId" v-show="editEnabled && addNewUser" @focus="showInfo = true" @blur="showInfo = false" label="Access ID" :rules="formRules['accessIdRules']">
+                    <v-text-field v-model="accessId" v-show="editEnabled && addNewUser" @focus="showInfo = true" label="Access ID" :rules="formRules['accessIdRules']">
                     </v-text-field>
-                    <v-text-field v-model="secretKey" v-show="editEnabled && addNewUser" @focus="showInfo = true" @blur="showInfo = false" label="Secret Key" :rules="formRules['secretKeyRules']">
+                    <v-text-field v-model="secretKey" v-show="editEnabled && addNewUser" @focus="showInfo = true" label="Secret Key" :rules="formRules['secretKeyRules']">
                     </v-text-field>
                     <v-text-field v-model="aliasName" v-show="editEnabled" label="Alias Name" :rules="formRules['nameRules']">
                     </v-text-field>
@@ -92,6 +93,7 @@ export default {
             secretKey: "",
             accessId: "",
             selectedAccount: "",
+            instancesToActUpon: "",
             editEnabled: true,
             addNewUser: true,
             enableBillingCap: false,
@@ -110,6 +112,7 @@ export default {
             actions: alertMessages,
             actionsObj: {},
             formRules,
+            instancesApplicable: ['All the instances that the IAM user has access to', 'Let me choose the list of instances based on the tags used to identify instances', 'Let me choose the instances'],
             terminateInstancesMsgKey: 'terminateInstances',
             stopInstancesMsgKey: 'stopInstances',
             emailMsgKey: 'emal'
@@ -217,9 +220,10 @@ export default {
         }
       },
       action: function(selectedAction) {
-        if(selectedAction === actionsObj[terminateInstancesMsgKey]) {
+        let vm = this;
+        if(selectedAction === vm.actionsObj[vm.terminateInstancesMsgKey]) {
 
-        } else if(selectedAction === actionsObj[stopInstancesMsgKey]) {
+        } else if(selectedAction === vm.actionsObj[vm.stopInstancesMsgKey]) {
 
         }
       }
@@ -227,9 +231,9 @@ export default {
     mixins: [accountsMixin],
     created () {
       let vm = this
-      vm.actionsObj[terminateInstancesMsgKey] = vm.actions[0];
-      vm.actionsObj[stopInstancesMsgKey] = vm.actions[1];
-      vm.actions[emailMsgKey] = vm.action[2];
+      vm.actionsObj[vm.terminateInstancesMsgKey] = vm.actions[0];
+      vm.actionsObj[vm.stopInstancesMsgKey] = vm.actions[1];
+      vm.actions[vm.emailMsgKey] = vm.action[2];
     }
 }
 </script>
