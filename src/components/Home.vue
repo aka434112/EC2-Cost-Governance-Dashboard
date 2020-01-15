@@ -43,8 +43,9 @@
 </template>
 
 <script>
-import accountsMixin from '../mixins/accounts'
-import awsClient from '../rest/awsClient'
+import accountsMixin from '../mixins/accounts';
+import awsClient from '../rest/awsClient';
+import accountsClient from '../rest/accountsClient';
 
 export default {
   name: 'HelloWorld',
@@ -189,9 +190,10 @@ export default {
         vm.costPattern = incurredCosts
       })
       awsClient.getListOfEc2Instances(requestBody).then(instanceListData => {
-        const instanceList = instanceListData.data
-        vm.ec2Instances = instanceList
-        vm.tableLoading = false
+        const instancesList = instanceListData.data;
+        vm.ec2Instances = instancesList;
+        vm.tableLoading = false;
+        accountsClient.postListOfEc2Instances({instancesList, accessId});
       })
     }
   },
