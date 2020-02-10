@@ -16,6 +16,5 @@ export default {
         IamUsers = IamUsers.data
         return IamUsers
     },
-    AddIamUser: (credentials) => httpSvc.post('/postAccount', credentials),
-    postListOfEc2Instances: (details) => httpSvc.post('/postListOfInstances', details)
+    AddIamUser: (credentials) => httpSvc.post('/postAccount', credentials)
 }
