@@ -215,21 +215,14 @@ export default {
             vm.budgetList = [];
           }
         }
-      },
-      action: function(selectedAction) {
-        if(selectedAction === actionsObj[terminateInstancesMsgKey]) {
-
-        } else if(selectedAction === actionsObj[stopInstancesMsgKey]) {
-
-        }
       }
     },
     mixins: [accountsMixin],
     created () {
       let vm = this
-      vm.actionsObj[terminateInstancesMsgKey] = vm.actions[0];
-      vm.actionsObj[stopInstancesMsgKey] = vm.actions[1];
-      vm.actions[emailMsgKey] = vm.action[2];
+      vm.actionsObj[vm.terminateInstancesMsgKey] = vm.actions[0];
+      vm.actionsObj[vm.stopInstancesMsgKey] = vm.actions[1];
+      vm.actions[vm.emailMsgKey] = vm.action[2];
     }
 }
 </script>
