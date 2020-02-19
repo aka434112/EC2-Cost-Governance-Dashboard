@@ -53,11 +53,22 @@
                   </v-flex>
                   <v-alert v-show="showInfo" class="alert" type="info">Please specify IAM credentials with respect to a user who has access to the AWS Billing and Cost Management console. Visit <a style="color:white" href="https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/grantaccess.html" target="_blank">AWS</a> for more information</v-alert>
                   <v-flex xs12 class="text-xs-left">
-                    <v-flex xs6>
-                      <v-switch v-show="editEnabled" v-model="enableBillingCap" class="ma-4" label="Billing limits"></v-switch>
-                    </v-flex>
-                    <v-btn v-show="budgetList.length && editEnabled" color="warning" @click="editBudget()">Edit Limits</v-btn>
-                    <v-btn color="success" @click="saveCredentials()" v-show='editEnabled'>Save Details</v-btn>
+                    <v-container>
+                      <v-layout row wrap>
+                        <v-flex xs6>
+                          <v-switch v-show="editEnabled" v-model="enableBillingCap" class="ma-4" label="Billing limits"></v-switch>
+                        </v-flex>
+                        <v-flex xs6>
+                          <v-text-field type="number" v-show="editEnabled" @focus="showPollingIntervalInfo = !showPollingIntervalInfo" @blur="showPollingIntervalInfo = !showPollingIntervalInfo" v-model="pollingInterval" label="The Polling Interval (in milliseconds)"></v-text-field>
+                          <v-text-field disabled v-show="!editEnabled" @focus="showPollingIntervalInfo = !showPollingIntervalInfo" @blur="showPollingIntervalInfo = !showPollingIntervalInfo" v-model="pollingInterval" label="The Polling Interval (in milliseconds)"></v-text-field>
+                        </v-flex>
+                        <v-flex xs12>
+                          <v-alert type="info" v-show="showPollingIntervalInfo">This interval refers to the interval after which the Cost Explorer APIs are invoked. Please note that AWS charges you 0.01$ each time you inoke the Cost Explorer API.</v-alert>
+                        </v-flex>
+                        <v-btn v-show="budgetList.length && editEnabled" color="warning" @click="editBudget()">Edit Limits</v-btn>
+                        <v-btn color="success" @click="saveCredentials()" v-show='editEnabled'>Save Details</v-btn>
+                      </v-layout>
+                    </v-container>
                   </v-flex>
                 </v-form>
               </v-card-text>
@@ -91,8 +102,10 @@ export default {
         return {
             secretKey: "",
             accessId: "",
+            pollingInterval: 86400000, //The Cost Explorer APIs are polled once a day by default (Interval takes the unit of milliseconds)
             selectedAccount: "",
             editEnabled: true,
+            showPollingIntervalInfo: false,
             addNewUser: true,
             enableBillingCap: false,
             inputsDidNotPassValidation: false,
@@ -143,6 +156,7 @@ export default {
           vm.secretKey = ""
           vm.accessId = ""
           vm.email = ""
+          vm.pollingInterval = 86400000
           vm.selectedAccount = ""
           vm.enableBillingCap = false
           vm.editEnabled = true
@@ -208,6 +222,7 @@ export default {
           vm.aliasName = accessId.split('-')[1];
           vm.secretKey = vm.secretKeys[vm.accessId];
           vm.email = vm.emailIds[vm.accessId];
+          vm.pollingInterval = vm.pollingIntervals[vm.accessId];
           vm.budgetObj = vm.budgetLimitsAccounts[vm.accessId];
           if(vm.budgetObj && Object.keys(vm.budgetObj).length) {
             vm.budgetList = vm.budgetObj.budgetsList;

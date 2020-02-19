@@ -9,7 +9,8 @@ export default new Vuex.Store ({
         awsAccessIds: [],
         secretKeys: {},
         budgetLimitsAccounts: {},
-        emailIds: {}
+        emailIds: {},
+        pollingIntervals: {}
     },
     mutations: {
         toggleOverlay: function (state) {
@@ -20,6 +21,7 @@ export default new Vuex.Store ({
             state.secretKeys = credentials['secretKeys']
             state.budgetLimitsAccounts = credentials['budgetLimitsAccounts']
             state.emailIds = credentials['emailIds']
+            state.pollingIntervals = credentials['pollingIntervals']
         }
     },
     actions: {

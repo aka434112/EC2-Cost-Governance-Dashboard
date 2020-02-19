@@ -12,6 +12,7 @@ class Account {
     getAliasName = () => this.aliasName
     getEmail = () => this.email
     getBudgets = () => this.budgets
+    getPollingInterval = () => this.pollingInterval
 
     populateCredentialsFromObj = (credentials) => {
         this.accessId = credentials.accessId
@@ -19,6 +20,7 @@ class Account {
         this.budgets = credentials.budgets
         this.email = credentials.email
         this.aliasName = credentials.aliasName
+        this.pollingInterval = credentials.pollingInterval
     }
 }
 
