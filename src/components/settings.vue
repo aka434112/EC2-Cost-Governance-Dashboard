@@ -65,8 +65,8 @@
                         <v-flex xs12>
                           <v-alert type="info" v-show="showPollingIntervalInfo">This interval refers to the interval after which the Cost Explorer APIs are invoked. Please note that AWS charges you 0.01$ each time you inoke the Cost Explorer API.</v-alert>
                         </v-flex>
-                        <v-btn v-show="budgetList.length && editEnabled" color="warning" @click="editBudget()">Edit Limits</v-btn>
-                        <v-btn color="success" @click="saveCredentials()" v-show='editEnabled'>Save Details</v-btn>
+                        <v-btn text color="success" @click="saveCredentials()" v-show='editEnabled'>Save Details</v-btn>
+                        <v-btn v-show="budgetList.length && editEnabled" text color="success" @click="editBudget()">Edit Limits</v-btn>
                       </v-layout>
                     </v-container>
                   </v-flex>
@@ -143,8 +143,8 @@ export default {
         },
         saveCredentials: async function () {
           let vm = this
-          let credentials = new Account(vm.accessId, vm.secretKey, vm.aliasName, vm.email, vm.credentialsObj);
-          accountsClient.AddIamUser(credentials).then(postResponse => {
+          let credentials = new Account(vm.accessId, vm.secretKey, vm.aliasName, vm.email, vm.credentialsObj, vm.pollingInterval);
+          accountsClient.AddIamUser({credentials}).then(postResponse => {
             if (postResponse.status === 201) {
               vm.clearCredentials()
             } 

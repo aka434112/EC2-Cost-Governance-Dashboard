@@ -1,10 +1,11 @@
 class Account {
-    constructor (accessId, secretKey, aliasName, email, budgets) {
+    constructor (accessId, secretKey, aliasName, email, budgets, pollingInterval) {
         this.accessId = accessId
         this.secretKey = secretKey
         this.aliasName = aliasName
         this.email = email
         this.budgets = budgets
+        this.pollingInterval = pollingInterval
     }
 
     getAccessId = () => this.accessId
