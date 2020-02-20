@@ -75,7 +75,7 @@
             </v-card-title>
             <v-card-text>
               <v-autocomplete v-model="selectedAccount" :items="awsAccessIds" hide-no-data hide-selected label="Lookup an IAM user account" placeholder="Start typing to Search" append-outer-icon="search" return-object></v-autocomplete>
-              <v-btn :disabled="editEnabled" icon outlined color="info" title="Edit Details" @click="editSettingsForExistingUser()"><v-icon>edit</v-icon></v-btn>&nbsp;<v-btn :disabled="editEnabled" color="info" outlined @click="deleteUser()" icon title="Delete User"><v-icon>delete</v-icon></v-btn>&nbsp;<v-btn color="info" outlined icon title="Add User" @click="addUser()"><v-icon>person_add</v-icon></v-btn>
+              <v-btn :disabled="editEnabled" icon outlined color="info" title="Edit Details" @click="editSettingsForExistingUser()"><v-icon>edit</v-icon></v-btn>&nbsp;<v-btn :disabled="selectedAccount === ''" color="info" outlined @click="deleteUser()" icon title="Delete User"><v-icon>delete</v-icon></v-btn>&nbsp;<v-btn :disabled="addNewUser" color="info" outlined icon title="Add User" @click="addUser()"><v-icon>person_add</v-icon></v-btn>
             </v-card-text>
           </v-card>
         </v-flex>
