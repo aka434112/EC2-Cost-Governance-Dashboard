@@ -14,10 +14,9 @@
                           <v-text-field label="Budget Limit (in USD)*" type="number" v-model="billingLimit" required></v-text-field>
                           <v-select :items="actions" label="Select an action*" required v-model="action"></v-select>
                           <div v-show="inputsDidNotPassValidation" class="red--text"><v-icon color="red" style="vertical-align:middle">close</v-icon>Please specify a valid budget/action</div>
-                          <v-btn color="blue darken-1" text @click="addBudget()">Add Limit</v-btn>
-                          <v-btn color="blue darken-1" text @click="resetBudget()">Reset Limits</v-btn>
-                          <v-btn color="blue darken-1" text @click="setBudgets()">Save</v-btn>
-                          <v-spacer></v-spacer>
+                          <v-btn color="info" outlined @click="addBudget()">Add Limit</v-btn>
+                          <v-btn color="info" outlined @click="resetBudget()">Reset Limits</v-btn>
+                          <v-btn color="info" outlined @click="setBudgets()">Save</v-btn><br/>
                           <v-chip v-for="(action, budget) in budgetObj" v-if="budget !== 'budgetsList'" class="ma-2" color="red" label text-color="white"><v-icon left>attach_money</v-icon>{{budget}}-{{action}}</v-chip>
                         </v-flex>
                         <v-flex xs12>
@@ -41,13 +40,9 @@
                     </v-text-field>
                     <v-text-field v-model="secretKey" v-show="editEnabled && addNewUser" @focus="showInfo = true" @blur="showInfo = false" label="Secret Key" :rules="formRules['secretKeyRules']">
                     </v-text-field>
-                    <v-text-field v-model="aliasName" v-show="editEnabled" label="Alias Name" :rules="formRules['nameRules']">
+                    <v-text-field v-model="aliasName" :disabled="!editEnabled" label="Alias Name" :rules="formRules['nameRules']">
                     </v-text-field>
-                    <v-text-field v-model="aliasName" v-show="!editEnabled" disabled label="Alias Name" :rules="formRules['nameRules']">
-                    </v-text-field>
-                    <v-text-field v-model="email" v-show="editEnabled" label="Email ID" :rules="formRules['emailRules']">
-                    </v-text-field>
-                    <v-text-field v-model="email" v-show="!editEnabled" disabled label="Email ID" :rules="formRules['emailRules']">
+                    <v-text-field v-model="email" :disabled="!editEnabled" label="Email ID" :rules="formRules['emailRules']">
                     </v-text-field>
                     <v-chip v-show="!editEnabled" v-for="(action, budget) in budgetObj" v-if="budget !== 'budgetsList'" class="ma-2" color="red" label text-color="white"><v-icon left>attach_money</v-icon>{{budget}}-{{action}}</v-chip>
                   </v-flex>
@@ -55,18 +50,17 @@
                   <v-flex xs12 class="text-xs-left">
                     <v-container>
                       <v-layout row wrap>
-                        <v-flex xs6>
-                          <v-switch v-show="editEnabled" v-model="enableBillingCap" class="ma-4" label="Billing limits"></v-switch>
+                        <v-flex xs6 v-show="editEnabled">
+                          <v-switch v-model="enableBillingCap" class="ma-4" label="Billing limits"></v-switch>
                         </v-flex>
                         <v-flex xs6>
-                          <v-text-field type="number" v-show="editEnabled" @focus="showPollingIntervalInfo = !showPollingIntervalInfo" @blur="showPollingIntervalInfo = !showPollingIntervalInfo" v-model="pollingInterval" label="The Polling Interval (in milliseconds)"></v-text-field>
-                          <v-text-field disabled v-show="!editEnabled" @focus="showPollingIntervalInfo = !showPollingIntervalInfo" @blur="showPollingIntervalInfo = !showPollingIntervalInfo" v-model="pollingInterval" label="The Polling Interval (in milliseconds)"></v-text-field>
+                          <v-text-field type="number" :disabled="!editEnabled" @focus="showPollingIntervalInfo = !showPollingIntervalInfo" @blur="showPollingIntervalInfo = !showPollingIntervalInfo" v-model="pollingInterval" label="The Polling Interval (in milliseconds)"></v-text-field>
                         </v-flex>
                         <v-flex xs12>
                           <v-alert type="info" v-show="showPollingIntervalInfo">This interval refers to the interval after which the Cost Explorer APIs are invoked. Please note that AWS charges you 0.01$ each time you inoke the Cost Explorer API.</v-alert>
                         </v-flex>
-                        <v-btn text color="success" @click="saveCredentials()" v-show='editEnabled'>Save Details</v-btn>
-                        <v-btn v-show="budgetList.length && editEnabled" text color="success" @click="editBudget()">Edit Limits</v-btn>
+                        <v-btn color="info" outlined @click="saveCredentials()" v-show='editEnabled'>Save Details</v-btn>&nbsp;
+                        <v-btn outlined v-show="budgetList.length && editEnabled" color="info" @click="editBudget()">Edit Limits</v-btn>
                       </v-layout>
                     </v-container>
                   </v-flex>
@@ -81,7 +75,7 @@
             </v-card-title>
             <v-card-text>
               <v-autocomplete v-model="selectedAccount" :items="awsAccessIds" hide-no-data hide-selected label="Lookup an IAM user account" placeholder="Start typing to Search" append-outer-icon="search" return-object></v-autocomplete>
-              <v-btn icon title="Edit Details" @click="editSettingsForExistingUser()"><v-icon>edit</v-icon></v-btn><v-btn @click="deleteUser()" icon title="Delete User"><v-icon>delete</v-icon></v-btn><v-btn icon title="Add User" @click="addUser()"><v-icon>person_add</v-icon></v-btn>
+              <v-btn :disabled="editEnabled" icon outlined color="info" title="Edit Details" @click="editSettingsForExistingUser()"><v-icon>edit</v-icon></v-btn>&nbsp;<v-btn :disabled="editEnabled" color="info" outlined @click="deleteUser()" icon title="Delete User"><v-icon>delete</v-icon></v-btn>&nbsp;<v-btn color="info" outlined icon title="Add User" @click="addUser()"><v-icon>person_add</v-icon></v-btn>
             </v-card-text>
           </v-card>
         </v-flex>
