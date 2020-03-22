@@ -1,6 +1,6 @@
 # EC2 Cost Governance Dashboard (initial drop)
 
-> Want to make sure that your spend w.r.t EC2 instances does not exceed your expectation? The EC2 Cost Governance Dashboard helps users configure budget limits along with actions. This is meant to be a Proof of Concept (POC) and should not be used in conjunction with production instances. 
+> Want to make sure that your spend w.r.t EC2 instances does not exceed your expectation? The EC2 Cost Governance Dashboard helps users configure budget limits along with actions that get executed when the spend exceeds the limits. The service will poll the AWS Cost Explorer APIs to fetch the spend incurred by the user. It's important to note that each request to the Cost Explorer endpoint will incur an additional cost of 0.01 USD. This is meant to be a Proof of Concept (POC) and should not be used in conjunction with production instances. 
 
 ## Build Setup
 
