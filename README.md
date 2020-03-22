@@ -26,3 +26,6 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 ![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(134).png)
 ![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(135).png)
 ![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(157).png)
+![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(158).png)
+![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(159).png)
+![alt text](https://github.com/aka434112/EC2-Cost-Governance-Dashboard-initial-drop-/raw/master/screenshots/Screenshot%20(160).png)
