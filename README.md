@@ -1,6 +1,6 @@
 # EC2 Cost Governance Dashboard (initial drop)
 
-> The EC2 Cost Governance Dashboard helps users configure budget limits along with actions for an IAM user account
+> Want to make sure that your spend w.r.t EC2 instances does not exceed your expectation? The EC2 Cost Governance Dashboard helps users configure budget limits along with actions. This is meant to be a Proof of Concept (POC) and should not be used in conjunction with production instances. 
 
 ## Build Setup
 
